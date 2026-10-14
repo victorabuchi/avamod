@@ -16,7 +16,7 @@ export function epsDoc(v: Vectorized, title: string) {
 %%Creator: Avamod
 %%EndComments
 gsave
-${shape(v.fillD, v.fillColor)}${shape(v.outlineD, "#000000")}grestore
+${shape(v.fillD, v.fillColor)}${v.shadeD ? shape(v.shadeD, v.shadeColor ?? "#000000") : ""}${shape(v.outlineD, v.outlineColor ?? "#000000")}grestore
 showpage
 %%EOF
 `;

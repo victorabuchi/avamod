@@ -1,4 +1,4 @@
-import { mkdir, readFile, rm, writeFile } from "fs/promises";
+import { mkdir, readdir, readFile, rm, writeFile } from "fs/promises";
 import path from "path";
 
 // File storage behind a tiny interface. Local disk for now; swap the body for
@@ -35,3 +35,13 @@ export const MIME: Record<string, string> = {
   zip: "application/zip",
   json: "application/json",
 };
+
+export async function listFiles(id: string): Promise<string[]> {
+  return readdir(dir(id)).catch(() => []);
+}
+
+/** Replace a design's rendered files, keeping the named ones (reference photo, print). */
+export async function replaceFiles(id: string, files: Record<string, Buffer>, keep: string[]) {
+  for (const n of await listFiles(id)) if (!keep.includes(n)) await rm(path.join(dir(id), n), { force: true });
+  await putFiles(id, files);
+}

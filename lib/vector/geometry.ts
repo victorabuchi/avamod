@@ -17,10 +17,9 @@ export function pathBBox(d: string): BBox {
 }
 
 /** Scale path coordinates by (sx, sy) about the point (ox, oy). */
-export function scalePath(d: string, sx: number, sy: number, ox: number, oy: number): string {
-  if (sx === 1 && sy === 1) return d;
-  const X = (v: number) => (ox + (v - ox) * sx).toFixed(2);
-  const Y = (v: number) => (oy + (v - oy) * sy).toFixed(2);
+export function scalePath(d: string, sx: number, sy: number, ox: number, oy: number, tx = 0, ty = 0): string {
+  const X = (v: number) => (ox + (v - ox) * sx + tx).toFixed(2);
+  const Y = (v: number) => (oy + (v - oy) * sy + ty).toFixed(2);
   return parsePath(d)
     .map((s) => {
       if (s.t === "Z") return "Z";

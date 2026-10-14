@@ -9,15 +9,21 @@ const hexRgb = (c: string) => {
 };
 
 /** Draw the vector flat into a box on a page (box origin bottom-left, PDF units). */
-export function drawFlat(pdf: PDFDocument, page: PDFPage, v: Vectorized, box: { x: number; y: number; w: number; h: number }) {
+export async function drawFlat(pdf: PDFDocument, page: PDFPage, v: Vectorized, box: { x: number; y: number; w: number; h: number }) {
   const scale = Math.min(box.w / v.width, box.h / v.height);
   const x = box.x + (box.w - v.width * scale) / 2;
   const y = box.y + (box.h - v.height * scale) / 2;
   const f = { x, y, scale, flipHeight: v.height };
   const shape = (d: string, color: string) => `${hexRgb(color)} rg\n${pathOps(d, f)}\nf*\n`;
-  const content = `q\n${shape(v.fillD, v.fillColor)}${shape(v.outlineD, "#000000")}Q\n`;
-  const ref = pdf.context.register(pdf.context.stream(content));
-  page.node.addContentStream(ref);
+  let print = "";
+  if (v.print) {
+    const img = await pdf.embedPng(v.print.png);
+    const name = page.node.newXObject("Print", img.ref).decodeText();
+    const w = v.print.w * scale, h = v.print.h * scale;
+    print = `q ${w.toFixed(2)} 0 0 ${h.toFixed(2)} ${(x + v.print.x * scale).toFixed(2)} ${(y + (v.height - v.print.y - v.print.h) * scale).toFixed(2)} cm /${name} Do Q\n`;
+  }
+  const content = `q\n${shape(v.fillD, v.fillColor)}${v.shadeD ? shape(v.shadeD, v.shadeColor ?? "#000000") : ""}${print}${shape(v.outlineD, v.outlineColor ?? "#000000")}Q\n`;
+  page.node.addContentStream(pdf.context.register(pdf.context.stream(content)));
 }
 
 /** Single-page vector PDF of one flat. Also used (renamed) for the .ai file. */
@@ -26,7 +32,7 @@ export async function flatPdf(v: Vectorized, title: string) {
   pdf.setTitle(title);
   pdf.setCreator("Avamod");
   const page = pdf.addPage([v.width, v.height]);
-  drawFlat(pdf, page, v, { x: 0, y: 0, w: v.width, h: v.height });
+  await drawFlat(pdf, page, v, { x: 0, y: 0, w: v.width, h: v.height });
   return Buffer.from(await pdf.save());
 }
 
@@ -66,10 +72,10 @@ export async function techPackPdf(spec: GarmentSpec, views: { front: Vectorized;
   const boxH = 470, boxY = H - M - 60 - boxH;
   const hasBack = !!views.back;
   const boxW = hasBack ? (W - 2 * M - 12) / 2 : W - 2 * M;
-  drawFlat(pdf, p1, views.front, { x: M, y: boxY, w: boxW, h: boxH });
+  await drawFlat(pdf, p1, views.front, { x: M, y: boxY, w: boxW, h: boxH });
   p1.drawText("FRONT", { x: M, y: boxY - 14, size: 8, font: bold, color: mute });
   if (views.back) {
-    drawFlat(pdf, p1, views.back, { x: M + boxW + 12, y: boxY, w: boxW, h: boxH });
+    await drawFlat(pdf, p1, views.back, { x: M + boxW + 12, y: boxY, w: boxW, h: boxH });
     p1.drawText("BACK", { x: M + boxW + 12, y: boxY - 14, size: 8, font: bold, color: mute });
   }
   let y = boxY - 40;

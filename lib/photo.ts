@@ -1,11 +1,14 @@
 import sharp from "sharp";
 import type { BBox } from "@/lib/vector/geometry";
+import { shoulderFraction } from "@/lib/flat";
 
 export type PhotoAnalysis = {
   /** Fabric colour as #rrggbb (median of the garment body, edges and prints excluded). */
   color: string;
   /** Garment bounding box as fractions of the photo. */
   bbox: BBox;
+  /** Shoulder line as a fraction of the garment height (see shoulderFraction). */
+  shoulder: number;
   /** Width / height of the garment in the photo. */
   aspect: number;
   /** A graphic printed on the garment, cut out with transparency. */
@@ -69,6 +72,16 @@ function dilate(mask: Uint8Array, w: number, h: number, r: number) {
   return out;
 }
 
+function rowWidths(mask: Uint8Array, w: number, y0: number, y1: number) {
+  const rows: number[] = [];
+  for (let y = y0; y <= y1; y++) {
+    let c = 0;
+    for (let x = 0; x < w; x++) c += mask[y * w + x];
+    rows.push(c);
+  }
+  return rows;
+}
+
 export async function analyzePhoto(input: Buffer): Promise<PhotoAnalysis> {
   const { data, info } = await sharp(input, { limitInputPixels: false })
     .rotate()
@@ -112,6 +125,7 @@ export async function analyzePhoto(input: Buffer): Promise<PhotoAnalysis> {
     color: hex(base),
     bbox: { x: x0 / w, y: y0 / h, w: bw / w, h: bh / h },
     aspect: bw / bh,
+    shoulder: shoulderFraction(rowWidths(mask, w, y0, y1)),
   };
 
   // Print = interior pixels far from the fabric colour, grouped; keep the biggest group near the chest.

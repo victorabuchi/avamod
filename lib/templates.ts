@@ -5,8 +5,9 @@ import { vectorize } from "@/lib/vector/vectorize";
 import { pathBBox, type BBox } from "@/lib/vector/geometry";
 import { putFiles } from "@/lib/storage";
 import { defaultMeasurements, type GarmentSpec } from "@/lib/spec";
+import { shoulderFraction } from "@/lib/flat";
 
-export type View = { width: number; height: number; fillD: string; outlineD: string; bbox: BBox };
+export type View = { width: number; height: number; fillD: string; outlineD: string; shadeD?: string; bbox: BBox; /** Shoulder line as a fraction of the garment height. */ shoulder: number };
 export type Template = {
   id: string;
   name: string;
@@ -28,7 +29,26 @@ async function toView(input: Buffer): Promise<View> {
   // Big print-resolution flats exceed sharp's default pixel limit.
   const png = await sharp(input, { limitInputPixels: false }).resize(2400, 2400, { fit: "inside" }).png().toBuffer();
   const v = await vectorize(png);
-  return { width: v.width, height: v.height, fillD: v.fillD, outlineD: v.outlineD, bbox: pathBBox(v.fillD) };
+  const bbox = pathBBox(v.fillD);
+  // Row widths of the silhouette, to find the shoulder line.
+  const H = 300;
+  const mask = await sharp(
+    Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${v.width}" height="${v.height}"><path d="${v.fillD}" fill="#000" fill-rule="evenodd"/></svg>`),
+  )
+    .resize({ height: Math.round((H * v.height) / bbox.h) })
+    .ensureAlpha()
+    .extractChannel(3)
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const { width: mw, height: mh } = mask.info;
+  const top = Math.floor((bbox.y / v.height) * mh), bottom = Math.ceil(((bbox.y + bbox.h) / v.height) * mh);
+  const rows: number[] = [];
+  for (let y = top; y < bottom && y < mh; y++) {
+    let c = 0;
+    for (let x = 0; x < mw; x++) if (mask.data[y * mw + x] > 127) c++;
+    rows.push(c);
+  }
+  return { width: v.width, height: v.height, fillD: v.fillD, outlineD: v.outlineD, shadeD: v.shadeD, bbox, shoulder: shoulderFraction(rows) };
 }
 
 export async function ingestTemplate(input: {
