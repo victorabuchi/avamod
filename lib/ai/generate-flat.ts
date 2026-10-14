@@ -1,5 +1,8 @@
 import { GoogleGenAI } from "@google/genai";
 
+/** True when the paid image model is configured; those designs cost a credit. */
+export const aiEnabled = () => !!process.env.GEMINI_API_KEY;
+
 export type View = "front" | "back";
 
 const PROMPT = (view: View, description: string) =>
