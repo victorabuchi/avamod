@@ -5,7 +5,7 @@ import styles from "@/components/app/app.module.css";
 import PageHead from "@/components/app/PageHead";
 import Icon from "@/components/Icon";
 import { requireViewer } from "@/lib/auth/viewer";
-import { getDesign, deleteDesign } from "@/lib/designs";
+import { getDesign, deleteDesign, PRINT, REFERENCE } from "@/lib/designs";
 import { redirect } from "next/navigation";
 
 export const metadata: Metadata = { title: "Design" };
@@ -28,7 +28,7 @@ export default async function DesignPage({ params }: PageProps<"/designs/[id]">)
   const views = (["front", "back"] as const)
     .map((v) => [v, d.files.find((f) => f.name.endsWith(`-${v}.svg`))?.name] as const)
     .filter((x): x is readonly [typeof x[0], string] => !!x[1]);
-  const url = (name: string, inline = false) => `/api/designs/${d.id}/${name}${inline ? "?inline=1" : ""}`;
+  const url = (name: string, inline = false) => `/api/designs/${d.id}/${name}${inline ? `?inline=1&v=${d.version}` : ""}`;
   const zip = d.files.find((f) => f.name.endsWith("-all.zip"));
 
   return (
@@ -36,10 +36,11 @@ export default async function DesignPage({ params }: PageProps<"/designs/[id]">)
       <PageHead
         icon="layers"
         title={d.name}
-        sub={d.garment_type}
+        sub={`${d.garment_type} · version ${d.version}`}
         right={
           <>
-            {zip && <a href={url(zip.name)} className={styles.btn}><Icon d="download" size={16} />Download all</a>}
+            <Link href={`/designs/${d.id}/edit`} className={styles.btn}><Icon d="wand" size={16} />Edit</Link>
+            {zip && <a href={url(zip.name)} className={styles.btnGhost}><Icon d="download" size={16} />Download all</a>}
             <Link href="/designs" className={styles.btnGhost}>All designs</Link>
           </>
         }
@@ -47,6 +48,13 @@ export default async function DesignPage({ params }: PageProps<"/designs/[id]">)
       {d.notes.map((n) => <p key={n} className={styles.notice}>{n}</p>)}
 
       <div className={styles.previews}>
+        {d.files.some((f) => f.name === REFERENCE) && (
+          <figure className={styles.preview}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={url(REFERENCE, true)} alt="Your reference photo" />
+            <figcaption>Your photo</figcaption>
+          </figure>
+        )}
         {views.map(([v, name]) => (
           <figure key={v} className={styles.preview}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -59,7 +67,7 @@ export default async function DesignPage({ params }: PageProps<"/designs/[id]">)
       <section className={styles.card}>
         <h2>Downloads</h2>
         <ul className={styles.files}>
-          {d.files.filter((f) => !f.name.endsWith(".json")).map((f) => (
+          {d.files.filter((f) => !f.name.endsWith(".json") && f.name !== REFERENCE && f.name !== PRINT).map((f) => (
             <li key={f.name}>
               <a href={url(f.name)} className={styles.file} download>
                 <Icon d="file" size={18} />

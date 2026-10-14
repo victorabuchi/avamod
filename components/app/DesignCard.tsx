@@ -10,7 +10,7 @@ export default function DesignCard({ d }: { d: Design }) {
     <Link href={`/designs/${d.id}`} className={styles.design}>
       <span className={styles.thumb}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        {front && <img src={`/api/designs/${d.id}/${front}?inline=1`} alt={`${d.name} flat`} loading="lazy" />}
+        {front && <img src={`/api/designs/${d.id}/${front}?inline=1&v=${d.version}`} alt={`${d.name} flat`} loading="lazy" />}
       </span>
       <span className={styles.designMeta}>
         <b>{d.name}</b>

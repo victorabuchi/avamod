@@ -786,3 +786,55 @@
   border-radius: 5px;
   vertical-align: -4px;
 }
+
+/* Editor */
+.compare {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+
+.compare[data-ref="true"] {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr);
+}
+
+.canvas {
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: repeating-conic-gradient(var(--soft) 0% 25%, var(--card) 0% 50%) 50% / 20px 20px;
+}
+
+.canvas svg {
+  display: block;
+  width: 100%;
+  max-height: 72dvh;
+}
+
+.refPhoto {
+  width: 100%;
+  max-height: 72dvh;
+  object-fit: contain;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+}
+
+@media (max-width: 900px) {
+  .compare[data-ref="true"] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.editorGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 360px);
+  gap: 16px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .editorGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

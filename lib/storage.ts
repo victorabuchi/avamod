@@ -28,6 +28,7 @@ export async function removeDesign(id: string) {
 export const MIME: Record<string, string> = {
   svg: "image/svg+xml",
   png: "image/png",
+  jpg: "image/jpeg",
   pdf: "application/pdf",
   ai: "application/pdf",
   eps: "application/postscript",

@@ -15,7 +15,7 @@ export async function GET(req: Request, ctx: RouteContext<"/api/designs/[id]/[fi
     headers: {
       "Content-Type": MIME[file.split(".").pop() ?? ""] ?? "application/octet-stream",
       "Content-Disposition": `${inline ? "inline" : "attachment"}; filename="${file}"`,
-      "Cache-Control": "private, max-age=3600",
+      "Cache-Control": "private, no-cache",
       "X-Content-Type-Options": "nosniff",
       // SVGs are served inline for previews: forbid scripts.
       "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; img-src data:",
