@@ -44,10 +44,10 @@ export default function AppShell({ viewer, children }: { viewer: Viewer; childre
         </span>
       </header>
       <div className={styles.body}>
-        <Rail />
+        <Rail admin={isUnlimited(viewer)} />
         <main className={styles.main}>{children}</main>
       </div>
-      <Tabs />
+      <Tabs admin={isUnlimited(viewer)} />
     </div>
   );
 }

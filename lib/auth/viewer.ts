@@ -20,3 +20,9 @@ export async function requireViewer(): Promise<Viewer> {
   if (!v) redirect("/login");
   return v;
 }
+
+export async function requireAdmin(): Promise<Viewer> {
+  const v = await requireViewer();
+  if (!isUnlimited(v)) redirect("/dashboard");
+  return v;
+}

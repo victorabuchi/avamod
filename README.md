@@ -2,14 +2,17 @@
 
 Upload a garment photo (for example a hoodie saved from a retail site) and get a vector technical flat and tech pack in every common design format.
 
-## Pipeline
+## How it works
 
-1. **Analyze** (Claude vision): garment type, colour, fabric, construction, trims, points of measure.
-2. **Redraw** (Gemini image model): clean front and back flat sketch on white, from the photo plus your notes.
-3. **Vectorize** (potrace): silhouette fill layer and outline/stitching layer as real vector paths.
-4. **Export**: SVG, 300 DPI transparent PNG, PDF, AI (PDF-compatible), EPS, layered PSD, and a tech pack PDF (flats, colour, points of measure, construction, trims), plus a zip of everything.
+The owner keeps a library of finished flats and tech packs (**Templates**, admin only). A designer uploads a photo of a garment and Avamod:
 
-Without API keys it still runs: the uploaded image is traced directly (front only, generic measurements). That works well on images that are already flats.
+1. **Analyses the photo**: finds the garment, reads the true fabric colour, and cuts out any chest graphic with transparency.
+2. **Matches a template**: Claude picks the closest template and reads fabric, construction and trims off the photo (needs `ANTHROPIC_API_KEY`). Without a key it matches on your description or the template you choose.
+3. **Adapts the template**: fabric colour, width and length, and the graphic placed by aligning shoulder lines.
+4. **Renders every export**: SVG, 300 DPI transparent PNG, PDF, AI, EPS, layered PSD, tech pack PDF, and a zip.
+5. **Editor**: review next to the photo, change colour, fit, graphic position and measurements, save to rebuild all files (versioned).
+
+Because every design starts from a clean template, vectors are always production-quality; no image generation is involved, so a design costs almost nothing to produce.
 
 ## Run
 
@@ -23,14 +26,16 @@ npm run migrate
 npm run dev
 ```
 
-Keys: `ANTHROPIC_API_KEY` (analysis), `GEMINI_API_KEY` (flat generation; model via `GEMINI_IMAGE_MODEL`).
+Optional key: `ANTHROPIC_API_KEY` for automatic template matching and fabric/construction notes (`MATCH_MODEL` to change the model).
+
+Create an admin: `EMAIL=you@x.com NAME=You PASSWORD=... PLAN=admin npx tsx scripts/create-user.mts`. Add templates on the Templates page. For local development only, `scripts/seed-templates.mts` loads flats from a folder (check their licence before using them for customers).
 
 ## Stack
 
 - Next.js (App Router), CSS modules, Figtree. Design language follows Pursecast and ChronKeep: compact, hairline borders, cobalt accent, dark mode.
 - Postgres via `pg`, plain SQL migrations in `migrations/` (`npm run migrate`).
 - Email and password accounts: scrypt hashing, signed httpOnly session cookie, login throttling.
-- Credits: AI designs cost 1 credit (3 free on signup), recorded in `credit_ledger`. Tracing an existing flat without AI keys is free.
+- Credits: a new design costs 1 credit (3 free on signup), recorded in `credit_ledger`; editing is free; admins are unlimited.
 - Design files live in `.data/designs/` behind `lib/storage.ts`; swap for S3/R2 before running multiple servers.
 
 ## Notes
