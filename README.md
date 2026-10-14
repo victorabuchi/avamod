@@ -1,36 +1,30 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Flatsmith
 
-## Getting Started
+Upload a garment photo (for example a hoodie saved from a retail site) and get a vector technical flat and tech pack in every common design format.
 
-First, run the development server:
+## Pipeline
 
-```bash
+1. **Analyze** (Claude vision): garment type, colour, fabric, construction, trims, points of measure.
+2. **Redraw** (Gemini image model): clean front and back flat sketch on white, from the photo plus your notes.
+3. **Vectorize** (potrace): silhouette fill layer and outline/stitching layer as real vector paths.
+4. **Export**: SVG, 300 DPI transparent PNG, PDF, AI (PDF-compatible), EPS, layered PSD, and a tech pack PDF (flats, colour, points of measure, construction, trims), plus a zip of everything.
+
+Without API keys it still runs: the uploaded image is traced directly (front only, generic measurements). That works well on images that are already flats.
+
+## Run
+
+```
+cp .env.example .env.local   # add keys
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Keys: `ANTHROPIC_API_KEY` (analysis), `GEMINI_API_KEY` (flat generation; model via `GEMINI_IMAGE_MODEL`).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Job output is written to `.data/jobs/` (gitignored).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Notes
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `.ai` is a PDF-compatible file, which Illustrator opens natively.
+- Measurements are estimates from an image; verify against a physical sample.
+- PNG/PSD canvas is 2400 x 3000 px (8 x 10 in at 300 DPI).

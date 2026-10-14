@@ -44,8 +44,10 @@ export async function techPackPdf(spec: GarmentSpec, views: { front: Vectorized;
     let cur = "";
     for (const w of words) {
       const next = cur ? `${cur} ${w}` : w;
-      if (font.widthOfTextAtSize(next, size) > width && cur) (lines.push(cur), (cur = w));
-      else cur = next;
+      if (font.widthOfTextAtSize(next, size) > width && cur) {
+        lines.push(cur);
+        cur = w;
+      } else cur = next;
     }
     if (cur) lines.push(cur);
     return lines;
@@ -76,7 +78,10 @@ export async function techPackPdf(spec: GarmentSpec, views: { front: Vectorized;
   p1.drawText(`Main colour ${spec.primaryColor.toUpperCase()}`, { x: M + 30, y: y + 8, size: 9, font: bold, color: ink });
   p1.drawText(clean(`Fabric: ${spec.fabric}`), { x: M + 30, y: y - 3, size: 8.5, font, color: mute });
   y -= 34;
-  for (const l of wrap(clean(spec.summary), 9, W - 2 * M)) (p1.drawText(l, { x: M, y, size: 9, font, color: ink }), (y -= 12));
+  for (const l of wrap(clean(spec.summary), 9, W - 2 * M)) {
+    p1.drawText(l, { x: M, y, size: 9, font, color: ink });
+    y -= 12;
+  }
 
   // Page 2: spec
   const p2 = pdf.addPage([W, H]);
