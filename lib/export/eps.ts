@@ -13,7 +13,7 @@ export function epsDoc(v: Vectorized, title: string) {
   return `%!PS-Adobe-3.0 EPSF-3.0
 %%BoundingBox: 0 0 ${v.width} ${v.height}
 %%Title: ${title.replace(/[()\\\n]/g, "")}
-%%Creator: Flatsmith
+%%Creator: Avamod
 %%EndComments
 gsave
 ${shape(v.fillD, v.fillColor)}${shape(v.outlineD, "#000000")}grestore

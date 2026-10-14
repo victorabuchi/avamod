@@ -24,7 +24,7 @@ export function drawFlat(pdf: PDFDocument, page: PDFPage, v: Vectorized, box: { 
 export async function flatPdf(v: Vectorized, title: string) {
   const pdf = await PDFDocument.create();
   pdf.setTitle(title);
-  pdf.setCreator("Flatsmith");
+  pdf.setCreator("Avamod");
   const page = pdf.addPage([v.width, v.height]);
   drawFlat(pdf, page, v, { x: 0, y: 0, w: v.width, h: v.height });
   return Buffer.from(await pdf.save());
@@ -33,7 +33,7 @@ export async function flatPdf(v: Vectorized, title: string) {
 export async function techPackPdf(spec: GarmentSpec, views: { front: Vectorized; back?: Vectorized }) {
   const pdf = await PDFDocument.create();
   pdf.setTitle(`${spec.name} - Tech pack`);
-  pdf.setCreator("Flatsmith");
+  pdf.setCreator("Avamod");
   const font = await pdf.embedFont(StandardFonts.Helvetica);
   const bold = await pdf.embedFont(StandardFonts.HelveticaBold);
   const W = 595, H = 842, M = 36;

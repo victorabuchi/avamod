@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Flatsmith",
+  title: "Avamod",
   description: "Upload a garment photo, get a vector flat and tech pack in every format.",
 };
 

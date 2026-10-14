@@ -1,4 +1,4 @@
-# Flatsmith
+# Avamod
 
 Upload a garment photo (for example a hoodie saved from a retail site) and get a vector technical flat and tech pack in every common design format.
 
