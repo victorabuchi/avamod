@@ -5,7 +5,7 @@ import { useState } from "react";
 import styles from "@/components/app/app.module.css";
 import Icon from "@/components/Icon";
 
-export default function Studio({ credits, costsCredit }: { credits: number; costsCredit: boolean }) {
+export default function Studio({ credits, templates }: { credits: number; templates: { id: string; name: string }[] }) {
   const router = useRouter();
   const [file, setFile] = useState<File | null>(null);
   const [src, setSrc] = useState<string>();
@@ -28,7 +28,7 @@ export default function Studio({ credits, costsCredit }: { credits: number; cost
     const fd = new FormData(e.currentTarget);
     fd.set("image", file);
     try {
-      const r = await fetch("/api/generate", { method: "POST", body: fd });
+      const r = await fetch("/api/designs", { method: "POST", body: fd });
       const j = await r.json();
       if (!r.ok) throw new Error(j.error ?? "Generation failed.");
       router.push(`/designs/${j.id}`);
@@ -38,7 +38,7 @@ export default function Studio({ credits, costsCredit }: { credits: number; cost
     }
   }
 
-  const blocked = costsCredit && credits < 1;
+  const blocked = credits < 1 || templates.length === 0;
 
   return (
     <div className={styles.studio}>
@@ -70,27 +70,31 @@ export default function Studio({ credits, costsCredit }: { credits: number; cost
           Describe it
           <textarea name="description" rows={3} className={styles.input} placeholder="Oversized pullover hoodie, kangaroo pocket, drop shoulder, ribbed cuffs" />
         </label>
-        <label className={`${styles.field} ${styles.row}`} style={{ flexDirection: "row", justifyContent: "space-between" }}>
-          Colour override
-          <input name="color" type="color" defaultValue="#c8c8c8" />
+        <label className={styles.field}>
+          Garment template
+          <select name="templateId" className={styles.input} defaultValue="">
+            <option value="">Match automatically</option>
+            {templates.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
+          </select>
         </label>
         <button className={styles.btn} disabled={!file || busy || blocked} style={{ height: 42 }}>
-          {busy ? "Generating... about a minute" : costsCredit ? "Generate (1 credit)" : "Generate"}
+          {busy ? "Building your design..." : "Create design"}
         </button>
-        {blocked && <p className={styles.error}>You are out of credits. <a href="/settings#plan">See plans</a></p>}
+        {credits < 1 && <p className={styles.error}>You are out of credits. <a href="/settings#plan">See plans</a></p>}
+        {templates.length === 0 && <p className={styles.error}>No templates yet. Add some under Templates.</p>}
         {error && <p className={styles.error} role="alert">{error}</p>}
       </form>
 
       <section className={styles.card}>
-        <h2>What you get</h2>
+        <h2>How it works</h2>
         <ol className={styles.steps}>
-          <li>A clean front and back flat, redrawn from your photo.</li>
-          <li>Vector files: SVG, PDF, AI and EPS.</li>
-          <li>A 300 DPI transparent PNG and a layered PSD.</li>
-          <li>A tech pack PDF with measurements, construction and trims.</li>
+          <li>Upload a photo of the garment you want, for example from a store site.</li>
+          <li>Avamod matches the closest template and copies the colour, fit and any chest graphic.</li>
+          <li>Review it, then change colour, fit, print position and measurements in the editor.</li>
+          <li>Download SVG, 300 DPI PNG, PDF, AI, EPS, a layered PSD and the tech pack.</li>
         </ol>
         <p className={styles.muted} style={{ margin: 0 }}>
-          Works best with a front-on product photo on a plain background. Flat sketches are traced exactly as drawn.
+          Works best with a front-on product photo on a plain background. Each new design uses one credit; editing is free.
         </p>
       </section>
     </div>

@@ -2,16 +2,17 @@ import type { Metadata } from "next";
 import PageHead from "@/components/app/PageHead";
 import Studio from "./Studio";
 import { isUnlimited, requireViewer } from "@/lib/auth/viewer";
-import { aiEnabled } from "@/lib/ai/generate-flat";
+import { listTemplates } from "@/lib/templates";
 
 export const metadata: Metadata = { title: "New design" };
 
 export default async function StudioPage() {
   const viewer = await requireViewer();
+  const templates = (await listTemplates()).map((t) => ({ id: t.id, name: t.name }));
   return (
     <>
       <PageHead icon="wand" title="New design" sub="Photo to tech pack" />
-      <Studio credits={isUnlimited(viewer) ? 999999 : viewer.credits} costsCredit={aiEnabled()} />
+      <Studio credits={isUnlimited(viewer) ? 999999 : viewer.credits} templates={templates} />
     </>
   );
 }
