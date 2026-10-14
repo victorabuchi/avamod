@@ -36,10 +36,10 @@ export default async function DesignPage({ params }: PageProps<"/designs/[id]">)
       <PageHead
         icon="layers"
         title={d.name}
-        sub={`${d.garment_type} · version ${d.version}`}
+        sub={`${d.garment_type} · ${d.template_id ? "from template" : "AI redraw"} · version ${d.version}`}
         right={
           <>
-            <Link href={`/designs/${d.id}/edit`} className={styles.btn}><Icon d="wand" size={16} />Edit</Link>
+            {d.template_id && <Link href={`/designs/${d.id}/edit`} className={styles.btn}><Icon d="wand" size={16} />Edit</Link>}
             {zip && <a href={url(zip.name)} className={styles.btnGhost}><Icon d="download" size={16} />Download all</a>}
             <Link href="/designs" className={styles.btnGhost}>All designs</Link>
           </>

@@ -7,6 +7,7 @@ import { matchTemplate } from "@/lib/ai/match";
 import { getTemplate, listTemplates, type Template } from "@/lib/templates";
 import { printMeta, renderDesign } from "@/lib/render";
 import { FIT_MAX, FIT_MIN, mapY, measurementsFor, type Params } from "@/lib/flat";
+import { run as runRedraw } from "@/lib/pipeline";
 import type { GarmentSpec } from "@/lib/spec";
 
 export type Design = {
@@ -118,6 +119,30 @@ export async function createFromPhoto(
       `insert into designs (id, user_id, template_id, name, garment_type, summary, color, mode, notes, spec, params, files)
        values ($1,$2,$3,$4,$5,$6,$7,'template',$8,$9,$10,$11)`,
       [id, userId, t.id, name, t.garment_type, spec.summary, clean.color, JSON.stringify(notes), JSON.stringify(spec), JSON.stringify(clean), JSON.stringify(list({ ...files, ...extra }))],
+    );
+  } catch (e) {
+    await removeDesign(id);
+    throw e;
+  }
+  return id;
+}
+
+/**
+ * Mode 1, "Redraw": the AI redraws the photo as a fresh flat (needs GEMINI_API_KEY and ANTHROPIC_API_KEY;
+ * without them the uploaded image is traced directly). No template is involved.
+ */
+export async function createFromRedraw(
+  userId: string,
+  input: { image: Buffer; mime: string; description: string; name?: string; color?: string },
+) {
+  const r = await runRedraw(input);
+  const id = randomUUID();
+  await putFiles(id, r.files);
+  try {
+    await pool.query(
+      `insert into designs (id, user_id, template_id, name, garment_type, summary, color, mode, notes, spec, params, files)
+       values ($1,$2,null,$3,$4,$5,$6,$7,$8,$9,'{}',$10)`,
+      [id, userId, r.spec.name, r.spec.garmentType, r.spec.summary, r.spec.primaryColor, r.mode, JSON.stringify(r.notes), JSON.stringify(r.spec), JSON.stringify(list(r.files))],
     );
   } catch (e) {
     await removeDesign(id);
