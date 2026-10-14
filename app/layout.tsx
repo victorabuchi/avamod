@@ -1,29 +1,29 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Figtree } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const figtree = Figtree({ subsets: ["latin", "latin-ext"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
-  title: "Avamod",
-  description: "Upload a garment photo, get a vector flat and tech pack in every format.",
+  title: { default: "Avamod | Garment flats and tech packs from a photo", template: "%s | Avamod" },
+  description: "Upload a photo of any garment. Avamod redraws it as a clean vector flat and builds the tech pack in SVG, PNG, PDF, AI, EPS and PSD.",
+  applicationName: "Avamod",
+  icons: { icon: "/icon.svg" },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#0d1015" },
+  ],
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="en" className={figtree.variable}>
+      <body>{children}</body>
     </html>
   );
 }

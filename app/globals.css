@@ -1,26 +1,96 @@
 @import "tailwindcss";
 
+/* Design tokens, shared by every page. Same language as Pursecast and ChronKeep:
+   Figtree, 14px, hairline borders, compact; cobalt accent. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --accent: #3b5bdb;
+  --accent-hover: #364fc7;
+  --accent-tint: #edf2ff;
+  --on-accent: #fff;
+  --ink: #14181f;
+  --ink2: #334155;
+  --muted: #6b7380;
+  --line: #e3e7ec;
+  --line2: #cfd5dd;
+  --bg: #f5f7fa;
+  --card: #fff;
+  --soft: #f1f4f8;
+  --glass: rgba(255, 255, 255, 0.94);
+  --neg: #dc2626;
+  --neg-bg: #fef2f2;
+  --pos: #15803d;
+  --warn-bg: #fffbeb;
+  --warn-line: #fde68a;
+  --warn-ink: #92400e;
+  color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  :root:not([data-theme="light"]) {
+    --accent: #5c7cfa;
+    --accent-hover: #748ffc;
+    --accent-tint: #1b2440;
+    --ink: #e8ebf0;
+    --ink2: #c3cad5;
+    --muted: #8b94a3;
+    --line: #232a34;
+    --line2: #333c49;
+    --bg: #0d1015;
+    --card: #151a21;
+    --soft: #1a2029;
+    --glass: rgba(21, 26, 33, 0.92);
+    --neg-bg: #2a1517;
+    --warn-bg: #2a2310;
+    --warn-line: #5b4a16;
+    --warn-ink: #fcd34d;
+    color-scheme: dark;
   }
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans), system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 14px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+a {
+  color: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
 }
