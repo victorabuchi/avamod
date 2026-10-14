@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { revalidatePath } from "next/cache";
 import styles from "@/components/app/app.module.css";
 import PageHead from "@/components/app/PageHead";
-import { requireViewer } from "@/lib/auth/viewer";
+import { isUnlimited, requireViewer } from "@/lib/auth/viewer";
 import { pool } from "@/lib/db";
 
 export const metadata: Metadata = { title: "Settings" };
@@ -38,8 +38,8 @@ export default async function Settings() {
       <section id="plan" className={styles.card} style={{ maxWidth: 520 }}>
         <h2>Plan and credits</h2>
         <p style={{ margin: 0 }}>
-          <span className={styles.badge}>{viewer.plan === "free" ? "Free" : viewer.plan}</span>
-          &nbsp; {viewer.credits} AI design credits left
+          <span className={styles.badge}>{viewer.plan === "free" ? "Free" : viewer.plan === "admin" ? "Admin" : viewer.plan}</span>
+          &nbsp; {isUnlimited(viewer) ? "Unlimited AI designs" : `${viewer.credits} AI design credits left`}
         </p>
         <p className={styles.muted} style={{ margin: 0 }}>Each AI design uses one credit. Paid plans with monthly credits are coming soon.</p>
       </section>

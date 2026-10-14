@@ -4,7 +4,7 @@ import styles from "@/components/app/app.module.css";
 import PageHead from "@/components/app/PageHead";
 import DesignCard from "@/components/app/DesignCard";
 import Icon from "@/components/Icon";
-import { requireViewer } from "@/lib/auth/viewer";
+import { isUnlimited, requireViewer } from "@/lib/auth/viewer";
 import { designStats, listDesigns } from "@/lib/designs";
 
 export const metadata: Metadata = { title: "Dashboard" };
@@ -43,8 +43,8 @@ export default async function Dashboard() {
         </div>
         <div className={styles.stat}>
           <small>Credits left</small>
-          <b>{viewer.credits}</b>
-          <span>{viewer.plan === "free" ? "Free plan" : `${viewer.plan} plan`}</span>
+          <b>{isUnlimited(viewer) ? "Unlimited" : viewer.credits}</b>
+          <span>{viewer.plan === "free" ? "Free plan" : viewer.plan === "admin" ? "Admin, all features" : `${viewer.plan} plan`}</span>
         </div>
       </div>
 

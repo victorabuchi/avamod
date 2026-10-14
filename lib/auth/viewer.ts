@@ -3,6 +3,9 @@ import { redirect } from "next/navigation";
 import { one } from "@/lib/db";
 import { readSession } from "./session";
 
+// Admin accounts have every feature with no credit limit.
+export const isUnlimited = (v: Pick<Viewer, "plan">) => v.plan === "admin";
+
 export type Viewer = { id: string; email: string; name: string; plan: string; credits: number };
 
 /** The signed-in user, or null. Cached per request. */

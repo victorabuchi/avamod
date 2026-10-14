@@ -62,6 +62,8 @@ export const designStats = (userId: string) =>
 
 /** Atomically spend one credit. Returns false when the balance is empty. */
 export async function spendCredit(userId: string): Promise<boolean> {
+  const plan = await one<{ plan: string }>("select plan from users where id = $1", [userId]);
+  if (plan?.plan === "admin") return true;
   const client = await pool.connect();
   try {
     await client.query("begin");
@@ -79,6 +81,8 @@ export async function spendCredit(userId: string): Promise<boolean> {
 }
 
 export async function refundCredit(userId: string) {
+  const plan = await one<{ plan: string }>("select plan from users where id = $1", [userId]);
+  if (plan?.plan === "admin") return;
   await pool.query("update users set credits = credits + 1 where id = $1", [userId]);
   await pool.query("insert into credit_ledger (user_id, delta, reason) values ($1, 1, 'refund')", [userId]);
 }

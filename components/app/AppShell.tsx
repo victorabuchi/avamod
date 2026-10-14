@@ -5,7 +5,7 @@ import Icon from "@/components/Icon";
 import Popover from "./Popover";
 import { Rail, Tabs } from "./Nav";
 import { signOutAction } from "@/lib/auth/actions";
-import type { Viewer } from "@/lib/auth/viewer";
+import { isUnlimited, type Viewer } from "@/lib/auth/viewer";
 
 export default function AppShell({ viewer, children }: { viewer: Viewer; children: React.ReactNode }) {
   return (
@@ -19,7 +19,7 @@ export default function AppShell({ viewer, children }: { viewer: Viewer; childre
         <span className={styles.topRight}>
           <Link href="/settings#plan" className={styles.credits} title="AI design credits left">
             <Icon d="zap" size={15} />
-            {viewer.credits} <span className={styles.hideSm}>credits</span>
+            {isUnlimited(viewer) ? "Unlimited" : <>{viewer.credits} <span className={styles.hideSm}>credits</span></>}
           </Link>
           <Link href="/studio" className={`${styles.btn} ${styles.hideSm}`}>
             <Icon d="wand" size={16} />
