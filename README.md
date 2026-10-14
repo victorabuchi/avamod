@@ -13,15 +13,25 @@ Without API keys it still runs: the uploaded image is traced directly (front onl
 
 ## Run
 
+Needs Node 22+ and Postgres 16.
+
 ```
-cp .env.example .env.local   # add keys
+createdb avamod
+cp .env.example .env.local   # DATABASE_URL, SESSION_SECRET (32+ chars), optional API keys
 npm install
+npm run migrate
 npm run dev
 ```
 
 Keys: `ANTHROPIC_API_KEY` (analysis), `GEMINI_API_KEY` (flat generation; model via `GEMINI_IMAGE_MODEL`).
 
-Job output is written to `.data/jobs/` (gitignored).
+## Stack
+
+- Next.js (App Router), CSS modules, Figtree. Design language follows Pursecast and ChronKeep: compact, hairline borders, cobalt accent, dark mode.
+- Postgres via `pg`, plain SQL migrations in `migrations/` (`npm run migrate`).
+- Email and password accounts: scrypt hashing, signed httpOnly session cookie, login throttling.
+- Credits: AI designs cost 1 credit (3 free on signup), recorded in `credit_ledger`. Tracing an existing flat without AI keys is free.
+- Design files live in `.data/designs/` behind `lib/storage.ts`; swap for S3/R2 before running multiple servers.
 
 ## Notes
 

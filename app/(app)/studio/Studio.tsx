@@ -63,7 +63,7 @@ export default function Studio({ credits, costsCredit }: { credits: number; cost
           <input type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden onChange={(e) => pick(e.target.files?.[0])} />
         </label>
         <label className={styles.field}>
-          Style name <span className={styles.muted}>(optional)</span>
+          <span>Style name <span className={styles.muted}>(optional)</span></span>
           <input name="name" className={styles.input} maxLength={80} />
         </label>
         <label className={styles.field}>

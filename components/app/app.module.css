@@ -687,7 +687,7 @@
 
 .previews {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(240px, 380px));
   gap: 12px;
 }
 
@@ -702,6 +702,8 @@
 .preview img {
   display: block;
   width: 100%;
+  max-height: 520px;
+  object-fit: contain;
 }
 
 .preview figcaption {
