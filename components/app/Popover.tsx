@@ -24,7 +24,7 @@ export default function Popover({ label, className, button, children }: { label:
         {button}
       </button>
       {open && (
-        <div className={styles.pop} onClick={() => setOpen(false)}>
+        <div className={styles.pop} onClick={(e) => (e.target as HTMLElement).closest("a") && setOpen(false)}>
           {children}
         </div>
       )}
