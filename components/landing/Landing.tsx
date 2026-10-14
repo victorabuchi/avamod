@@ -4,7 +4,7 @@ import Mark from "@/components/Mark";
 import Icon, { type IconName } from "@/components/Icon";
 
 const FEATURES: Array<{ icon: IconName; title: string; desc: string }> = [
-  { icon: "image", title: "Photo in, flat out", desc: "Upload a product shot from any store. Avamod redraws it as a clean, symmetric technical flat with every seam, pocket and stitch line." },
+  { icon: "image", title: "Two ways to build", desc: "Match the photo to a finished template and adapt it, or have AI redraw any garment from the picture. Same files out of both." },
   { icon: "layers", title: "True vector files", desc: "Not a traced screenshot. Separate fill and outline layers you can edit in Illustrator, Photoshop or Figma." },
   { icon: "ruler", title: "Tech pack included", desc: "Points of measure, construction notes, trims and fabric, laid out as a PDF you can send to a factory." },
   { icon: "file", title: "Every format", desc: "SVG, 300 DPI transparent PNG, PDF, AI, EPS and a layered PSD from a single upload." },
